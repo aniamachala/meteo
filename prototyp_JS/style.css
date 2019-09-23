@@ -1,0 +1,23 @@
+body {
+  background-color: transparent; /* the background color is transparent to allow customization in the file with iframe*/
+  margin-left: 5px;
+  font-family: "Comic Sans MS", cursive;
+  font-size: 14px;
+  /*color: #E8E8E8; <--- uncomment this section if You want to have light text color*/
+}
+
+div.icon {
+	width: 24px;
+}
+div.break{
+	width: 10px;
+}
+div.station {
+	font-family: "Comic Sans MS", cursive, sans-serif;
+	font-size: 110%;
+}
+i {
+	text-align: center;
+}
+
+

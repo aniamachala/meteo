@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Weather wigdet</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons.min.css">
+	<script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.9/css/weather-icons-wind.min.css">
+	<script type="text/javascript" src="script.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body onload=getMeasurements()>
+<div class="container">
+  <div class="row noMargin">
+    <div><i class="material-icons">room</i></div>
+    <div class="station" id="station" onload=getStatonName()></div>
+  </div>
+    <div class="row noMargin">
+	 <div style="font-size: 60%;">Data zarejestrowanego pomiaru</div>  
+ </div>
+  <div class="row noMargin">
+	<div id="timer" style="font-size: 80%;"></div> 
+ </div>
+ <div class="row noMargin">
+<i id="changeDangerIcon" class='' style='font-size: 60%;color:red'></i>	
+ <div class="warningDescription" style='font-size: 60%;color:red;text-align: center;'></div>
+  </div>
+<div class="row noMargin" style="font-size: 250%;">
+    <div>
+      <i class="wi wi-thermometer"></i>
+    </div>
+	<div style="margin:3px"> </div>
+    <div style="text-align: center" class="temperature"></div>
+	<div><i id="weatherIcon" class=''></i><i id="weatherArray" class=''></i></div>
+</div>
+<div class="row noMargin">
+	<div class="icon"><i class="wi wi-humidity"></i></div>
+    <div style="width: 50px;" class="humidity"></div>
+	<div style="margin:10px"> </div>
+    <div class="icon"><i class="wi wi-barometer"></i></div>
+    <div class="pressure"></div>
+</div>
+<div class="row noMargin">
+    <div class="icon"><i class="wi wi-raindrops"></i></div>
+    <div style="width: 50px;" class="rain"></div>
+	<div style="margin:10px"> </div>
+	<div class="icon"><i class="wi wi-umbrella"></i></div>
+    <div class="rainLastHour"></div>
+</div>
+<div class="row noMargin">
+	<div class="icon"><i id="changeIcon" class="wi wi-strong-wind"></i></div>
+    <div style="width: 50px;" class="windDir"></div>
+	<div style="margin:10px"> </div>
+    <div class="icon"><i class="wi wi-strong-wind"></i></div>
+    <div class="windSpeed"></div>
+</div>
+<div class="row noMargin">
+    <div class="icon"><i class="wi wi-thermometer"></i><i class="wi wi-raindrops"></i></div>
+    <div style="width: 50px;" class="devPoint"></div>
+	<div style="margin:10px"> </div>
+	<div class="icon"><i class="material-icons">landscape</i></div>
+    <div class="height"></div>
+</div>
+
+<div class="row noMargin">
+ </div>
+  </div>
+</div>
+
+</body>
+</html>
