@@ -40,14 +40,13 @@ function timer(today){
 		if (minutes<10) minutes = "0"+minutes;
 		var seconds = today.getSeconds();
 		if (seconds<10) seconds = "0"+seconds;
-		document.getElementById("timer").innerHTML = 
-		 day+"/"+month+"/"+year+"  "+hours+":"+minutes+":"+seconds;
+		lastRegisterAt = day+"/"+month+"/"+year+"  "+hours+":"+minutes+":"+seconds; 
+		document.getElementById("timer").innerHTML = lastRegisterAt ;
 }
 
 function getStatonName(){
 	$.getJSON('http://mech.fis.agh.edu.pl/meteo/rest/json/info', function(dane) {
         var arrayOfObjects = eval(dane);
-       // var station = arrayOfObjects[0];
 	    var station = arrayOfObjects.find(el => el.station === selectedStation);
 		var src = document.getElementById("station"); 
 		$(".station").html(station.name);		
@@ -67,7 +66,7 @@ function setHistTime(actualUtc){
       timeArray.t10 = comupteTime(actualUtc, 300)
       timeArray.t11 = comupteTime(actualUtc, 330)
       timeArray.t12 = comupteTime(actualUtc, 360)
-      setTimeout(findPressure , 5000); 
+      setTimeout(findPressure , 1000); 
   }
   
 function comupteTime(utc, diff){
@@ -124,7 +123,7 @@ function findPressure(){
     }catch(e) {
 		console.log(e);
 	}
-    setTimeout(() => weather(press0,press1,press2,press3,press4,press5,press6,press7,press8,press9,press10,press11,press12), 2000);
+    setTimeout(() => weather(press0,press1,press2,press3,press4,press5,press6,press7,press8,press9,press10,press11,press12), 1000);
     });
 }
 
@@ -171,11 +170,25 @@ function weather(press0,press1,press2,press3,press4,press5,press6,press7,press8,
 	}
 	else if (pressurerdiff <= 0.25 && pressurerdiff >= -0.25)
 		WeatherArray = 'wi wi-direction-right';	
+	window.localStorage.setItem('WeatherArray', WeatherArray);
+	window.localStorage.setItem('WeatherIcon', WeatherIcon);
 	document.getElementById("weatherArray").className = WeatherArray;
 	document.getElementById("weatherIcon").className = WeatherIcon;
 }
-
+var ta = null;
+var p0 = null;
+var ha = null;
+var t0 = null;
+var ra = null;
+var r1 = null;
+var ws = null;
+var wg = null;
+var h0 = null;
+var lastRegisterAt = null;
+var windDirIcon = null;
+setHtmlElements();
 function getMeasurements(){
+	setHtmlElements();
     $.getJSON('http://mech.fis.agh.edu.pl/meteo/rest/json/last/'+selectedStation, function(dane) {
         var arrayOfObjects = eval(dane);
         var jsonKey = arrayOfObjects[0];
@@ -186,19 +199,78 @@ function getMeasurements(){
 		timer(myDate);
 		actualUtc = jsonKey.utc;
 		var temperature = jsonKey.data.ta;
-		var ta = temperature+ "&deg;C"
+		ta = temperature+ "&deg;C"
 		actualP0 = jsonKey.data.p0;
-		var p0 = actualP0 + " hPa";
-		var ha = jsonKey.data.ha + "%";
-		var t0 = jsonKey.data.t0 + "&deg;C";
-		var r1 = jsonKey.data.r1+ " mm/h";
-		var rain = jsonKey.data.ra;
-		var ra = rain + " mm";
-		var windSpeed = jsonKey.data.ws;
-		var ws = windSpeed + " m/s";
-		var wd = jsonKey.data.wd;
-		var wg = jsonKey.data.wg + " m/s";
-		var h0 = jsonKey.data.h0 + "m n.p.m.";
+		p0 = actualP0 + " hPa";
+		ha = jsonKey.data.ha + "%";
+		t0 = jsonKey.data.t0 + "&deg;C";
+		r1 = jsonKey.data.r1+ " mm/h";
+		rain = jsonKey.data.ra;
+		ra = rain + " mm";
+		windSpeed = jsonKey.data.ws;
+		ws = windSpeed + " m/s";
+		wd = jsonKey.data.wd;
+		wg = jsonKey.data.wg + " m/s";
+		h0 = jsonKey.data.h0 + "m n.p.m.";
+		var wind = deriveWindDir(wd);
+		windDirIcon = wind.direction;
+		var warning = CheckWeatherHazards(temperature, windSpeed,rain) 
+		setLocalStorageForMeasurements();
+		setHtmlElements();
+		document.getElementById("changeIcon").className = wind.icon;
+		document.getElementById("changeDangerIcon").className = warning.icon;
+		$(".warningDescription").html(warning.description);
+		setHistTime(actualUtc);
+    });
+	setTimeout("getMeasurements()",600000);
+    }
+function setLocalStorageForMeasurements(){
+	window.localStorage.setItem('ta', ta);
+	window.localStorage.setItem('p0', p0);
+	window.localStorage.setItem('ha', ha);
+	window.localStorage.setItem('t0', t0);
+	window.localStorage.setItem('ra', ra);
+	window.localStorage.setItem('r1', r1);
+	window.localStorage.setItem('ws', ws);
+	window.localStorage.setItem('wg', wg);
+	window.localStorage.setItem('h0', h0);
+	window.localStorage.setItem('windDirIcon', windDirIcon);
+	window.localStorage.setItem('lastRegisterAt', lastRegisterAt);
+}
+
+function setHtmlElements(){
+	if(window.localStorage.getItem('ta') !==null)
+		ta = window.localStorage.getItem('ta');
+	if(window.localStorage.getItem('p0') !==null)
+		p0 = window.localStorage.getItem('p0');
+	if(window.localStorage.getItem('ha') !==null)
+		ha = window.localStorage.getItem('ha');
+	if(window.localStorage.getItem('p0') !==null)
+		t0 = window.localStorage.getItem('t0');
+	if(window.localStorage.getItem('ra') !==null)
+		ra = window.localStorage.getItem('ra');
+	if(window.localStorage.getItem('r1') !==null)
+		r1 = window.localStorage.getItem('r1');
+	if(window.localStorage.getItem('ws') !==null)
+		ws = window.localStorage.getItem('ws');
+	if(window.localStorage.getItem('wg') !==null)
+		wg = window.localStorage.getItem('wg');
+	if(window.localStorage.getItem('h0') !==null)
+		h0 = window.localStorage.getItem('h0');
+	if(window.localStorage.getItem('windDirIcon') !==null)
+		windDirIcon = window.localStorage.getItem('windDirIcon');
+	if(window.localStorage.getItem('lastRegisterAt') !==null){
+		lastRegisterAt = window.localStorage.getItem('lastRegisterAt');
+		document.getElementById("timer").innerHTML = lastRegisterAt ;
+	}
+	if(window.localStorage.getItem('WeatherIcon') !==null){
+		WeatherIcon = window.localStorage.getItem('WeatherIcon');
+		document.getElementById("weatherIcon").className = WeatherIcon;
+	}
+	if(window.localStorage.getItem('WeatherArray') !==null){
+		WeatherArray = window.localStorage.getItem('WeatherArray');
+		document.getElementById("weatherArray").className = WeatherArray;
+	}
 		$(".temperature").html(ta);
 		$(".pressure").html(p0);
 		$(".humidity").html(ha);
@@ -208,16 +280,9 @@ function getMeasurements(){
 		$(".windSpeed").html(ws);
 		$(".windTemp").html(wg);
 		$(".height").html(h0);
-		var wind = deriveWindDir(wd);
-		var warning = CheckWeatherHazards(temperature, windSpeed,rain) 
-		$(".windDir").html(wind.direction);
-		document.getElementById("changeIcon").className = wind.icon;
-		document.getElementById("changeDangerIcon").className = warning.icon;
-		$(".warningDescription").html(warning.description);
-		setHistTime(actualUtc);
-    });
-	setTimeout("getMeasurements()",600000);
-    }
+		$(".windDir").html(windDirIcon);
+		$(".timer").html(lastRegisterAt);	
+}
 	
 function deriveWindDir(windDir) {
       var wind_directions_array = [
